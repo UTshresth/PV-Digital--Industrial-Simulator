@@ -30,7 +30,7 @@ A common issue in web simulators is that hidden graphs (e.g., inside a closed da
 
 1.  Clone the repository:
     ```bash
-  
+  git clone [https://github.com/UTshresth/PV-Digital--Industrial-Simulator.git](https://github.com/UTshresth/PV-Digital--Industrial-Simulator.git)
     ```
 2.  Navigate to the project folder.
 3.  Open `index.html` in any modern web browser (Chrome, Edge, Firefox).
