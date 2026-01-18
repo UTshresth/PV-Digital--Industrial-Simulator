@@ -36,6 +36,10 @@ A common issue in web simulators is that hidden graphs (e.g., inside a closed da
 3.  Open `index.html` in any modern web browser (Chrome, Edge, Firefox).
 4.  No backend, node_modules, or installation required!
 
+or use the vercel app link
+
+https://pvdigitalsimulator.vercel.app/
+
 ## 📸 How to Use
 
 1.  **Configure Panel:** Select your solar panel brand and Series/Parallel configuration.
