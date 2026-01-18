@@ -1,0 +1,827 @@
+ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #000; }
+        
+        /* UI OVERLAY */
+        #ui-layer {
+            position: absolute; width: 100%; height: 100%; pointer-events: none;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        /* --- PROFESSIONAL MODAL STYLING --- */
+        #setup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;
+            background: rgba(0,0,0,0.85); /* Slightly more transparent backdrop */
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex; justify-content: center; align-items: center; color: white;
+        }
+
+        /* --- MAIN CONTROL BAR --- */
+/* --- MAIN CONTROL BAR --- */
+#controls-wrapper {
+    position: absolute;
+    bottom: 30px;
+    left: 20px; /* SHIFTED TO MARGIN as requested */
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px; /* Tighter gaps */
+
+    background: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 8px 12px; /* Compact padding */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    z-index: 1000;
+    
+    /* Smooth width animation */
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --- SECTIONS --- */
+.control-section {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    gap: 8px;
+}
+
+.v-sep {
+    width: 1px;
+    height: 25px;
+    background: rgba(255,255,255,0.15);
+}
+
+/* --- TOGGLE SWITCH --- */
+.source-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.source-toggle {
+    display: flex;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 2px;
+    width: 110px;
+}
+.toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 5px;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+.toggle-btn.active {
+    background: #333;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+#realTimePanel {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    
+    /* Change: We allow this panel to hold the vertical group */
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+    
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#realTimePanel.open {
+    max-width: 500px; 
+    opacity: 1;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.15);
+    margin-left: 5px;
+}
+
+/* --- NEW: VERTICAL STACK (Buttons Top, Input Bottom) --- */
+.rt-vertical-group {
+    display: flex;
+    flex-direction: column; /* This forces the inputs below */
+    justify-content: center;
+    gap: 6px; /* Space between buttons and input box */
+}
+
+/* --- ACTION BUTTONS --- */
+.rt-action-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ccc;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.rt-action-btn:hover { background: rgba(255, 255, 255, 0.15); color: white; }
+
+/* --- INPUT BOX (Now appears below) --- */
+#manual-coords-input {
+    display: none; /* Hidden by default */
+    gap: 4px;
+    background: rgba(0,0,0,0.2);
+    padding: 4px;
+    border-radius: 4px;
+    width: 100%; /* Fill the width of the button group */
+}
+
+/* --- STATUS BOX (Stays on the right) --- */
+#rt-status {
+    color: white; /* Ensure text is white */
+    min-width: 120px; 
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+#rt-status > div:first-child {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+#rt-status > div:nth-child(2) {
+    font-size: 9px !important;
+    color: #bbb !important;
+}
+/* --- SLIDERS --- */
+.slider-group { width: 140px; }
+.slider-title {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 700;
+    color: #777;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+}
+
+/* --- RE-CONFIG BUTTON --- */
+.btn-reconfig {
+    background: transparent;
+    border: 1px solid rgba(255, 235, 59, 0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.btn-reconfig:hover {
+    background: rgba(255, 235, 59, 0.1);
+    border-color: rgba(255, 235, 59, 0.8);
+}
+.icon-yellow { color: #ffeb3b; font-size: 12px; }
+.text-reconfig { color: #ffeb3b; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+
+        .setup-box {
+            /* Professional Dark Slate Theme */
+            background: #1e293b; 
+            padding: 40px; 
+            border-radius: 12px; /* More subtle rounded corners */
+            width: 420px;
+            border: 1px solid #334155; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .modal-title {
+            margin: 0 0 5px 0;
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+        
+        label { 
+            font-size: 11px; 
+            color: #cbd5e1; /* Lighter text for readability */
+            text-transform: uppercase; 
+            font-weight: 600;
+            letter-spacing: 0.5px; 
+            display: block; 
+            margin-bottom: 6px; 
+        }
+
+        .setup-input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            background: #0f172a; /* Darker input background */
+            border: 1px solid #334155; 
+            color: #e2e8f0; 
+            border-radius: 6px; 
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box; /* Ensures padding doesn't break width */
+        }
+
+        .setup-input:focus { 
+            border-color: #3b82f6; /* Professional Blue Focus */
+            outline: none; 
+        }
+
+        .setup-btn {
+            width: 100%; 
+            padding: 14px; 
+            /* Corporate Blue Gradient */
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            border: none; 
+            border-radius: 6px; 
+            color: white; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: transform 0.1s, box-shadow 0.2s;
+            text-transform: uppercase;
+        }
+
+        .setup-btn:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .modal-backdrop {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.9); /* Dark background */
+    backdrop-filter: blur(8px);   /* THE BLUR EFFECT */
+    z-index: 20000;               /* Higher than everything else */
+    display: flex;                /* Needed for centering */
+    justify-content: center;      /* Centers horizontally */
+    align-items: center;          /* Centers vertically */
+}
+
+        #config-error {
+            color: #f87171; /* Soft Red */
+            font-size: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            background: rgba(239, 68, 68, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- DASHBOARD (METRICS ONLY) --- */
+        #dashboard {
+            position: absolute; top: 20px; right: 20px;
+            pointer-events: auto;
+            background: rgba(10, 15, 20, 0.9); 
+            color: white; 
+            width: 160px;       /* Narrower (was 240px) */
+            min-height: 200px;  /* Taller (forces vertical elongation) */
+            padding: 30px 20px;
+            border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        /* --- GRAPH PANEL (BOTTOM RIGHT) --- */
+        #graph-panel {
+            position: absolute; bottom: 20px; right: 20px;
+            pointer-events: auto;
+            background: rgba(10, 15, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 15px;
+            /* WIDTH DECREASED AS REQUESTED */
+            width: 300px; 
+            height: 180px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column;
+        }
+
+        .graph-header {
+            font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 5px; display: flex; justify-content: space-between;
+        }
+
+        .metric-label { font-size: 10px; color: #8899a6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
+        .metric-value { font-size: 24px; font-family: 'Courier New', monospace; font-weight: 700; margin-bottom: 15px; color: #00e676; text-shadow: 0 0 20px rgba(0, 230, 118, 0.4); }
+        .spec-tag { font-size: 9px; background: #222; padding: 2px 6px; border-radius: 4px; color: #aaa; margin-bottom: 10px; display: inline-block; border: 1px solid #444; }
+
+        /* CONTROLS (Bottom Center) */
+      
+        .config-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffea00; padding: 12px 25px; border-radius: 30px;
+            cursor: pointer; font-weight: 700; font-family: 'Segoe UI', sans-serif;
+            font-size: 12px; letter-spacing: 1px; transition: all 0.3s ease;
+            text-transform: uppercase; pointer-events: auto;
+        }
+        .config-btn:hover {
+            background: #ffea00; color: black;
+            box-shadow: 0 0 20px rgba(255, 234, 0, 0.4); transform: scale(1.05);
+        }
+        .slider-group { text-align: center; width: 180px; }
+        .slider-title { color: white; font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; height: 6px; background: #333;
+            border-radius: 5px; outline: none; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            background: #2196F3; border: 2px solid white; box-shadow: 0 0 10px #2196F3;
+            margin-top: -7px; transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        /* --- CUSTOM MODAL BACKDROP --- */
+/* This is needed for the second popup window (Custom Config) */
+/* Add this to style.css */
+/* --- CUSTOM POPUP BOX STYLE --- */
+.custom-box {
+    background-color: #1e293b; 
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px;
+    border: 1px solid #334155;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}/* --- 1. MAIN CONTAINER (Invisible Wrapper) --- */
+/* Make sure the side container stacks buttons vertically */
+#fixed-left-container {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+}
+
+/* Base Style for Side Buttons */
+.icon-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    display: flex; /* Centers the icon */
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.1);
+}
+
+/* 1. Shift the Record Button 20px to the right */
+/* --- RECTANGULAR BUTTON STYLE --- */
+.rect-btn {
+    /* Layout & Shape */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between dot and text */
+    padding: 0 20px; /* Horizontal padding */
+    height: 45px;
+    border-radius: 8px; /* Slightly rounded corners */
+    /* Shift right as requested */
+    
+    /* Colors & Border */
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    
+    /* Typography */
+    font-family: 'Helvetica', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    /* Interaction */
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    white-space: nowrap; /* Keep text on one line */
+}
+
+/* Hover Effect */
+.rect-btn:hover {
+    background: rgba(255, 68, 68, 0.15);
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
+
+/* ACTIVE RECORDING STATE (Pulsing Red) */
+.rect-btn.recording-active {
+    background: #ff4444;
+    color: white;
+    border-color: #ff4444;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    animation: pulseRed 1.5s infinite;
+}
+
+@keyframes pulseRed {
+    0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+/* 2. Style for the Notification Popups (Toasts) */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Helvetica', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 10000;
+    
+    /* Animation: Slide Down & Fade In */
+    opacity: 0;
+    animation: slideDownFade 0.5s forwards;
+}
+
+@keyframes slideDownFade {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}
+
+
+/* ANIMATION: Pulse when Recording */
+@keyframes recPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); background: rgba(255, 0, 0, 0.2); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); background: rgba(255, 0, 0, 0.5); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); background: rgba(255, 0, 0, 0.2); }
+}
+
+.recording-active {
+    animation: recPulse 1.5s infinite;
+    border-color: white !important;
+    color: white !important;
+    background: red !important;
+}
+
+/* Ensure Tooltip is positioned correctly relative to the vertical stack */
+#spec-tooltip {
+    display: none;
+    position: absolute;
+    left: 100%; /* To the right of the buttons */
+    top: 0;     /* Align with top of container */
+    margin-left: 20px;
+    width: 260px;
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid #555;
+    border-left: 3px solid #00e676;
+    padding: 15px;
+    border-radius: 6px;
+    color: #ccc;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    backdrop-filter: blur(5px);
+}
+
+/* Button Styles */
+#btn-panel-specs, #btn-analysis {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    width: 160px; /* Fixed width so they look neat */
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: 0.2s;
+}
+
+/* Specific Colors */
+#btn-panel-specs {
+    background: rgba(0, 0, 0, 0.85);
+    color: #00e676;
+    border: 1px solid #00e676;
+}
+#btn-panel-specs:hover { background: #00e676; color: #000; }
+
+#btn-analysis {
+    background: rgba(0, 0, 0, 0.85);
+    color: #ffcc00;
+    border: 1px solid #ffcc00;
+}
+#btn-analysis:hover { background: #ffcc00; color: #000; }
+
+/* --- SLIDING DASHBOARD --- */
+/* --- FULL SCREEN DASHBOARD --- */
+#dashboard-section {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    background: #0b0b10;
+    z-index: 10000;
+    transition: top 0.4s ease-in-out;
+    
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    /* ADD THIS: Extra safety so it's truly invisible while off-screen */
+    visibility: hidden; 
+}
+
+#dashboard-section.active {
+    top: 0;
+    /* ADD THIS: Make it visible when it slides up */
+    visibility: visible; 
+}
+
+/* HEADER */
+.dash-header {
+    background: #111;
+    border-bottom: 2px solid #ffcc00;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.dash-header h2 { margin: 0; color: #fff; font-family: 'Segoe UI', sans-serif; }
+
+.btn-close-dash {
+    background: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.btn-close-dash:hover { background: #ff4444; color: white; }
+
+/* MAIN GRID LAYOUT */
+.dash-grid {
+    flex: 1;
+    padding: 20px;
+    display: grid;
+    /* Top row: 3 Data Cards. Bottom row: 3 Graphs */
+    grid-template-columns: 1fr 1fr 1fr; 
+    grid-template-rows: auto 1fr; 
+    gap: 20px;
+}
+
+/* DATA CARDS (Top Row) */
+.dash-card {
+    background: #16161a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+/* --- GRAPH SIZING FIX --- */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px; /* CRITICAL: Fixed height allows background rendering */
+    overflow: hidden;
+}
+
+/* Force canvas to fill the wrapper */
+.chart-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+.data-big {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 4px;
+    font-family: monospace;
+}
+
+/* GRAPH CARDS (Bottom Row) */
+/* ... existing dashboard css ... */
+
+/* FORCE FIXED HEIGHT FOR GRAPHS TO PREVENT GROWING BUG */
+/* style.css */
+
+.graph-card {
+    /* STRICT HEIGHT LIMITS */
+    height: 300px !important;
+    max-height: 300px !important;
+    min-height: 300px !important;
+    
+    position: relative;
+    border-top: 3px solid #333;
+    background: #16161a;
+    border-radius: 6px;
+    padding: 10px;
+    overflow: hidden; /* Cut off any expansion */
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-card canvas {
+    /* Force canvas to fit container exactly */
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+/* Specific Border Colors for Visual Separation */
+.card-input { border-top: 3px solid #21CBF3; }   /* Blue for Solar Input */
+.card-conv  { border-top: 3px solid #ffcc00; }   /* Yellow for Converter/Duty */
+.card-out   { border-top: 3px solid #00e676; }   /* Green for Output */
+
+/* NOTIFICATION POPUP */
+#mppt-toast {
+    visibility: hidden; /* Hidden by default */
+    min-width: 250px;
+    background-color: rgba(16, 185, 129, 0.9); /* Success Green */
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 2000;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s, top 0.5s;
+    border: 1px solid #ffffff55;
+}
+
+/* CLASS TO TRIGGER ANIMATION */
+#mppt-toast.show {
+    visibility: visible;
+    opacity: 1;
+    top: 50px; /* Slide down slightly */
+}
+
+/* The Container for the toggle */
+.source-toggle {
+    display: flex;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px;
+    margin-bottom: 10px;
+}
+
+/* The Buttons (Manual / Real-Time) */
+.toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 6px 0;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Active State (Green for Manual, Blue for RealTime) */
+.toggle-btn.manual.active { background: #00e676; color: #000; box-shadow: 0 0 8px rgba(0,230,118,0.4); }
+.toggle-btn.realtime.active { background: #21CBF3; color: #000; box-shadow: 0 0 8px rgba(33,203,243,0.4); }
+
+/* Real-Time Hidden Panel */
+#realTimeControls {
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Input Fields (Lat/Lon) */
+.coord-input {
+    background: #000;
+    border: 1px solid #444;
+    color: #00e676;
+    font-family: monospace;
+    width: 50px;
+    padding: 4px;
+    border-radius: 3px;
+    font-size: 11px;
+    text-align: center;
+}
+.coord-input:focus { border-color: #00e676; outline: none; }
+
+/* Action Buttons (Go / Loc) */
+.rt-action-btn {
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+.rt-action-btn:hover { background: #444; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- CHART MODAL (Glass Card) --- */
+#chart-wrapper {
+    position: absolute;
+    bottom: 100px; /* Floats above the control bar */
+    left: 40px;    /* Aligned with controls */
+    
+    width: 350px;
+    height: auto;
+    background: rgba(20, 20, 20, 0.9); /* Dark semi-transparent */
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 900;
+}
+
+/* Open State */
+#chart-wrapper.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}

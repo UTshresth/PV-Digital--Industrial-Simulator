@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PV Digital- Industrial Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <link rel="stylesheet" href="style.css">
+
+   <body>
+<div id="mppt-toast">MPPT TARGET LOCKED 🔒</div>
+    <div id="setup-overlay" style="display: flex;">
+        <div class="setup-box">
+          <h2 id="setup-title" class="modal-title">System Configuration</h2>
+            <p class="modal-subtitle">Define parameters for the PV Digital simulation.</p>
+            
+            <label>PV Module Type</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+                <select id="panel-select" class="setup-input" style="margin-bottom: 0; flex: 1; height: 42px;">
+                    <option value='{"name":"SunPower Maxeon 6", "pmax":475, "voc":52.6, "isc":11.57, "vmp":43.9, "cV":-0.00239, "cI":0.00057}'>SunPower Maxeon 6 (475W) - High Eff N-Type</option>
+                <option value='{"name":"REC Alpha Pure-R", "pmax":430, "voc":59.4, "isc":8.89, "vmp":50.1, "cV":-0.0024, "cI":0.0004}'>REC Alpha Pure-R (430W) - HJT Lead-Free</option>
+                <option value='{"name":"Panasonic EverVolt HK", "pmax":410, "voc":48.8, "isc":10.58, "vmp":41.4, "cV":-0.0024, "cI":0.0004}'>Panasonic EverVolt HK (410W) - Heterojunction</option>
+                
+                <option value='{"name":"Jinko Tiger Neo N-Type", "pmax":585, "voc":52.36, "isc":14.27, "vmp":44.21, "cV":-0.0025, "cI":0.00045}' selected>Jinko Tiger Neo N-Type (585W) - Top Seller</option>
+                <option value='{"name":"Longi Hi-MO 6 Explorer", "pmax":575, "voc":52.06, "isc":14.14, "vmp":43.91, "cV":-0.0023, "cI":0.0005}'>Longi Hi-MO 6 (575W) - HPBC Technology</option>
+                <option value='{"name":"Canadian Solar HiKu6", "pmax":550, "voc":49.6, "isc":14.0, "vmp":41.7, "cV":-0.0027, "cI":0.0005}'>Canadian Solar HiKu6 (550W) - Mono PERC</option>
+                <option value='{"name":"Trina Vertex S+", "pmax":440, "voc":52.2, "isc":10.67, "vmp":44.0, "cV":-0.0024, "cI":0.0004}'>Trina Vertex S+ (440W) - Dual Glass</option>
+                <option value='{"name":"Qcells Q.PEAK DUO G10+", "pmax":415, "voc":45.3, "isc":11.2, "vmp":37.1, "cV":-0.0027, "cI":0.0004}'>Qcells Q.PEAK DUO (415W) - Residential Std</option>
+                <option value='{"name":"JA Solar DeepBlue 4.0", "pmax":625, "voc":55.6, "isc":14.3, "vmp":46.5, "cV":-0.00275, "cI":0.00045}'>JA Solar DeepBlue 4.0 (625W) - Utility Scale</option>
+                
+                <option value='{"name":"First Solar Series 7", "pmax":530, "voc":232.0, "isc":2.95, "vmp":189.0, "cV":-0.0020, "cI":0.0004}'>First Solar Series 7 (530W) - Thin Film CdTe</option>
+                <option value='{"name":"Silfab Prime N-Type", "pmax":430, "voc":38.5, "isc":14.1, "vmp":33.0, "cV":-0.0026, "cI":0.0004}'>Silfab Prime (430W) - Made in USA</option>
+                <option value='{"name":"Mission Solar MSE PERC", "pmax":430, "voc":49.5, "isc":10.9, "vmp":41.2, "cV":-0.0027, "cI":0.0005}'>Mission Solar MSE (430W) - Texas Made</option>
+                
+                <option value='{"name":"Risen Titan S", "pmax":410, "voc":41.6, "isc":12.4, "vmp":34.6, "cV":-0.0025, "cI":0.0004}'>Risen Titan S (410W) - Budget PERC</option>
+                <option value='{"name":"Vikram Solar Somera", "pmax":590, "voc":50.2, "isc":14.5, "vmp":41.8, "cV":-0.0027, "cI":0.0005}'>Vikram Solar Somera (590W) - India Mfg</option>
+                <option value='{"name":"Jinko Eagle 72 Poly", "pmax":335, "voc":46.7, "isc":9.10, "vmp":37.6, "cV":-0.0031, "cI":0.0006}'>Old Jinko Eagle (335W) - Polycrystalline</option>
+                <option value='{"name":"Generic DIY 12V", "pmax":100, "voc":22.5, "isc":5.9, "vmp":18.0, "cV":-0.0035, "cI":0.0006}'>Generic DIY Panel (100W) - 12V Standard</option>
+                </select>
+
+                <button class="setup-btn" onclick="swapToCustomConfig()" 
+                        style="width: auto; height: 42px; padding: 0 15px; font-size: 10px; background: #334155; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
+                    CUSTOMIZE PANEL 🛠
+                </button>
+            </div>
+
+            <div style="display:flex; gap:15px;">
+                <div style="flex:1;">
+                    <label>Rows (Series)</label>
+                    <input type="number" id="setup-rows" class="setup-input" value="2" min="1">
+                </div>
+                <div style="flex:1;">
+                    <label>Cols (Parallel)</label>
+                    <input type="number" id="setup-cols" class="setup-input" value="2" min="1">
+                </div>
+            </div>
+<label>MPPT Algorithm</label>
+<select id="algo-select" class="setup-input">
+    <option value="pno">Perturb & Observe (P&O)</option>
+    <option value="incCond">Incremental Conductance</option>
+</select>
+            <label>DC-DC Converter</label>
+<select id="conv-select" class="setup-input">
+    <option value="buck">Buck (Step Down)</option>
+    <option value="boost">Boost (Step Up)</option>
+    <option value="buckboost">Buck-Boost (Inverting)</option>
+</select>
+            <div id="config-error">
+                <strong>Configuration Limit Exceeded:</strong><br>
+                Grid size capped at 20x20 for performance stability.
+            </div>
+
+           <button id="btn-init" class="setup-btn" onclick="startApp()">Initialize Simulation</button>
+        </div>
+    </div>
+
+   <div id="custom-modal" class="modal-backdrop" style="display: none;">
+        <div class="custom-box">
+            <h2 class="modal-title" style="color: #fbbf24;">Custom Module Design</h2>
+            <div class="modal-subtitle">Enter datasheet parameters at STC (25°C, 1000W/m²).</div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label>Model Name</label>
+                    <input type="text" id="cust-name" class="setup-input" placeholder="e.g. My Custom Panel">
+                </div>
+                <div style="flex: 1;">
+                    <label>Isc (Amps)</label>
+                    <input type="number" id="cust-isc" class="setup-input" placeholder="e.g. 11.5" step="0.1">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label>Pmax (Watts)</label>
+                    <input type="number" id="cust-pmax" class="setup-input" placeholder="e.g. 400">
+                </div>
+                <div style="flex: 1;">
+                    <label>Temp Coeff Voc (%/°C)</label>
+                    <input type="number" id="cust-cv" class="setup-input" placeholder="e.g. -0.25" step="0.01">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label>Vmp (Volts)</label>
+                    <input type="number" id="cust-vmp" class="setup-input" placeholder="e.g. 41.0" step="0.1">
+                </div>
+                <div style="flex: 1;">
+                    <label>Temp Coeff Isc (%/°C)</label>
+                    <input type="number" id="cust-ci" class="setup-input" placeholder="e.g. 0.05" step="0.01">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label>Voc (Volts)</label>
+                    <input type="number" id="cust-voc" class="setup-input" placeholder="e.g. 49.0" step="0.1">
+                </div>
+            </div>
+
+            <div id="custom-error" style="color: #f87171; font-size: 11px; margin-bottom: 15px; display: none;"></div>
+
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
+                <button class="setup-btn" onclick="closeCustomModal()" style="background: #334155; width: 40%;">Cancel</button>
+                <button class="setup-btn" onclick="validateCustomPanel()" style="width: 60%;">Apply Design</button>
+            </div>
+        </div>
+    </div>
+
+   <div id="ui-layer">
+    <div id="dashboard">
+        <div id="panel-name-display" class="spec-tag">SYSTEM OFFLINE</div>
+        
+        <div class="metric-label" id="pout-label">Buck Output Power (Pout)</div>
+        
+        <div id="disp-power" class="metric-value">0.00 W</div>
+        <div class="metric-label">Array Voltage (Vmp)</div>
+        <div id="disp-voltage" class="metric-value" style="color:#21CBF3;">0.00 V</div>
+        <div class="metric-label">Duty Cycle / MPPT Status</div>
+        <div id="disp-mppt" style="color: #ff9100; font-family: monospace; font-size: 12px; margin-bottom:10px;">STANDBY</div>
+    </div>
+</div>
+
+        <div id="graph-panel">
+            <div class="graph-header">
+                <span>MPPT Tracking History</span>
+                <span><span style="color:#00e676">POWER</span> vs <span style="color:#21CBF3">VOLTAGE</span></span>
+            </div>
+            <div style="flex:1; position: relative; width:100%; height:100%;">
+                <canvas id="liveChart"></canvas>
+            </div>
+        </div>
+<div id="controls-wrapper">
+
+    <div class="control-section">
+        
+        <div class="source-wrapper">
+            <div class="slider-title" style="margin-bottom:2px;">DATA SOURCE</div>
+            <div class="source-toggle">
+                <button id="btnManual" class="toggle-btn active" onclick="setMode('manual')">MANUAL</button>
+                <button id="btnRealTime" class="toggle-btn" onclick="setMode('realtime')">REAL-TIME</button>
+            </div>
+        </div>
+
+        <div id="realTimePanel">
+            
+            <div class="rt-vertical-group">
+                
+                <div style="display:flex; gap:5px;">
+                    <button onclick="getLocation()" class="rt-action-btn" title="Use Live Location">
+                        <span>📍</span> Current Location
+                    </button>
+                    <button onclick="openMap()" class="rt-action-btn" title="Pick from Map">
+                        <span>🌍</span> Map
+                    </button>
+                    <button onclick="toggleCoordInput()" class="rt-action-btn" title="Enter Coordinates">
+                        <span>⌨️</span> Input
+                    </button>
+                </div>
+                
+
+                <div id="manual-coords-input">
+                    <input type="number" id="inpLat" placeholder="Lat" style="width:35px; padding:3px; border:none; border-radius:3px; font-size:9px;">
+                    <input type="number" id="inpLon" placeholder="Lon" style="width:35px; padding:3px; border:none; border-radius:3px; font-size:9px;">
+                    <button onclick="fetchWeatherByCoords()" style="flex:1; background:#00e676; border:none; border-radius:3px; font-weight:bold; cursor:pointer; padding:0 6px;">Go</button>
+                </div>
+                <button onclick="toggleChart()" class="rt-action-btn" title="View Forecast">
+    <span>📈</span> Forecast
+</button>
+
+
+            </div>
+
+            <div id="rt-status" style="color: white;">
+                Waiting for input...
+            </div>
+
+        </div>
+    </div>
+
+    <div class="v-sep"></div>
+
+    <div class="slider-group">
+        <div class="slider-title">
+            <span>Sun Position</span>
+            <span id="val-irr" style="color:#00e676; font-family:monospace;">0 W/m²</span>
+        </div>
+        <input type="range" id="slider-irr" min="0" max="100" value="0">
+    </div>
+
+    <div class="v-sep"></div>
+
+    <div class="slider-group">
+        <div class="slider-title">
+            <span>Temperature</span>
+            <span id="val-temp" style="color:#21CBF3; font-family:monospace;">25 °C</span>
+        </div>
+        <input type="range" id="slider-temp" min="-10" max="80" value="25">
+    </div>
+
+    <div class="v-sep"></div>
+
+    <button class="btn-reconfig" onclick="openSetup()">
+        <span class="icon-yellow">⚙</span>
+        <span class="text-reconfig">RE-CONFIG</span>
+    </button>
+
+</div>
+<div id="fixed-left-container" style="margin-top: -90px;">
+    
+    <div id="btn-panel-specs" 
+         onmouseenter="showPanelInfo()" 
+         onmouseleave="hidePanelInfo()">
+        📋 PANEL INFO
+    </div>
+
+    <div id="btn-analysis" onclick="toggleDashboard()">
+        📈 LIVE ANALYSIS
+    </div>
+<button id="side-rec-btn" class="rect-btn" onclick="toggleRecording()" 
+        title="Start Recording to Generate Analysis"> <span id="rec-icon">●</span>
+    <span id="rec-text">Create Report</span>
+</button>
+    <div id="spec-tooltip">
+        <h3 class="tooltip-title">Active Panel Specs</h3>
+        <div class="tooltip-grid">
+            <div class="t-row"><span>Model:</span> <b id="tp-name" style="color:#fff">--</b></div>
+            <div class="t-row"><span>Pmax:</span> <b id="tp-pmax" style="color:#00e676">--</b></div>
+            <div class="t-row"><span>Voc:</span>  <b id="tp-voc"  style="color:#21CBF3">--</b></div>
+            <div class="t-row"><span>Isc:</span>  <b id="tp-isc"  style="color:#ffcc00">--</b></div>
+            <div class="t-row"><span>Vmp:</span>  <b id="tp-vmp">--</b></div>
+            <div class="t-row"><span>Coeff(V):</span> <b id="tp-cv">--</b></div>
+            <div class="t-row"><span>Coeff(I):</span> <b id="tp-ci">--</b></div>
+        </div>
+    </div>
+
+</div>
+
+<div id="dashboard-section">
+   <div class="dash-header">
+    <h2>📡 SYSTEM ANALYSIS</h2>
+    
+   
+    
+    <button class="btn-close-dash" onclick="toggleDashboard()">✕</button>
+</div>
+    <div class="dash-grid">
+        
+        <div class="dash-card card-input">
+            <div class="card-title">PV ARRAY INPUT (DC)</div>
+            <div class="stat-row"><span>Voltage (Vin):</span> <b id="d-vin" style="color:#21CBF3">0.00 V</b></div>
+            <div class="stat-row"><span>Current (Iin):</span> <b id="d-iin">0.00 A</b></div>
+            <div class="stat-row"><span>Power (Pin):</span>   <b id="d-pin">0.00 W</b></div>
+            <div class="stat-row"><span>Irradiance:</span>    <b id="d-irr">0 W/m²</b></div>
+        </div>
+
+        <div class="dash-card card-conv">
+            <div class="card-title" id="conv-title">BUCK CONVERTER STATE</div>
+            <div class="data-big" id="d-duty" style="color:#ffcc00">D = 0.00</div>
+         <div class="stat-row"><span>Algorithm:</span> <b id="algo-display">P&O</b></div>
+            <div class="stat-row"><span>Switch Freq:</span> <b>20 kHz</b></div>
+            <div class="stat-row"><span>Efficiency:</span> <b>96.0 %</b></div>
+        </div>
+
+        <div class="dash-card card-out">
+            <div class="card-title">GRID/LOAD OUTPUT (DC BUS)</div>
+            <div class="stat-row"><span>Bus Voltage (Vout):</span> <b id="d-vout" style="color:#00e676">0.00 V</b></div>
+            <div class="stat-row"><span>Load Current (Iout):</span> <b id="d-iout">0.00 A</b></div>
+            <div class="stat-row"><span>Power Out (Pout):</span>   <b id="d-pout">0.00 W</b></div>
+            <div class="stat-row"><span>Status:</span> <b id="d-status">SYNCED</b></div>
+        </div>
+<div class="dash-card graph-card">
+    <div class="card-title">P-V CHARACTERISTIC</div>
+    <div class="chart-container">
+        <canvas id="pvCurveChart"></canvas>
+    </div>
+</div>
+
+<div class="dash-card graph-card">
+    <div class="card-title">I-V CHARACTERISTIC</div>
+    <div class="chart-container">
+        <canvas id="ivCurveChart"></canvas>
+    </div>
+</div>
+
+<div class="dash-card graph-card">
+    <div class="card-title">GATE DRIVER PWM (SWITCHING SIGNAL)</div>
+    <div class="chart-container">
+        <canvas id="pwmScopeChart"></canvas>
+    </div>
+</div>
+
+    </div>
+</div>
+<div id="map-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
+    <div style="width: 80%; max-width: 800px; background: #1a1a1a; border: 1px solid #444; border-radius: 8px; overflow: hidden; display:flex; flex-direction:column;">
+        
+        <div style="padding: 15px; background: #111; border-bottom: 1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; color:#00e676;">Select Location</h3>
+            <button onclick="closeMap()" style="background:none; border:none; color:#666; font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+
+        <div style="position:relative; height: 400px;">
+            <div id="leaflet-map" style="width: 100%; height: 100%;"></div>
+            
+            <div style="position:absolute; top:10px; left:50px; right:50px; z-index:1000; display:flex; gap:5px;">
+                <input type="text" id="map-search" placeholder="Search city..." style="flex:1; padding:8px; background:rgba(0,0,0,0.8); border:1px solid #444; color:#fff; border-radius:4px;">
+                <button onclick="searchLocation()" style="background:#21CBF3; border:none; padding:0 15px; border-radius:4px; font-weight:bold; cursor:pointer;">SEARCH</button>
+            </div>
+        </div>
+
+        <div style="padding: 15px; background: #111; border-top: 1px solid #333; display:flex; justify-content:flex-end; gap:10px;">
+            <div id="selected-coords" style="color:#888; font-size:12px; align-self:center; margin-right:auto;">No location selected</div>
+            <button onclick="confirmLocation()" style="padding: 8px 20px; background: #00e676; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">USE THIS LOCATION</button>
+        </div>
+    </div>
+</div>
+
+<div id="chart-wrapper">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:12px; font-weight:bold; color:#21CBF3;">24H FORECAST</span>
+        <button onclick="toggleChart()" style="background:none; border:none; color:#666; cursor:pointer; font-size:14px;">✕</button>
+    </div>
+    <div style="position: relative; height: 180px; width: 100%;">
+        <canvas id="tempChart"></canvas>
+    </div>
+</div>
+    <script src="script.js"></script>
+    <script src="analysis.js"></script>
+    <script src="realtime.js"></script>
+</body>
+</head>
+</html>
